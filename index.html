@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-Exambro By 2pai</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .main-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .upload-zone {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9ff;
+        }
+        .upload-zone:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+            transform: scale(1.02);
+        }
+        .upload-zone.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+        }
+        .preview-img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .processing-badge {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .result-box {
+            background: #f8f9ff;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 8px;
+            word-wrap: break-word;
+        }
+        .error-box {
+            background: #fff3f3;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="main-card">
+                    <div class="card-header bg-primary text-white p-4">
+                        <h3 class="mb-0 text-center">R-Exambro QR Decryptor</h3>
+                        <p class="mb-0 text-center mt-2"><small>Multi-processing for blurry QR codes</small></p>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Upload Zone -->
+                        <div class="upload-zone mb-3" id="uploadZone">
+                            <div class="text-center">
+                                <div style="font-size: 48px"></div>
+                                <h5 class="mt-3">Click or Drag QR Code Image</h5>
+                                <p class="text-muted"><small>JPG, PNG (Max 10MB)</small></p>
+                            </div>
+                        </div>
+                        <input type="file" id="qrImageInput" accept="image/*" class="d-none">
+                        
+                        <!-- OR Divider -->
+                        <div class="text-center my-3">
+                            <span class="badge bg-secondary">OR</span>
+                        </div>
+                        
+                        <!-- Manual Input -->
+                        <div class="mb-3">
+                            <label for="qrData" class="form-label fw-bold">Paste Scanned QR Code Data</label>
+                            <textarea class="form-control" id="qrData" rows="3" placeholder="e.g. RiyuExambroSecureQR..."></textarea>
+                        </div>
+                        
+                        <!-- Processing Info -->
+                        <div class="alert alert-warning d-none mb-3" id="processingInfo">
+                            <span class="processing-badge">⏳</span> Processing with multiple methods...
+                        </div>
+                        
+                        <!-- Preview Image -->
+                        <div class="d-none mb-3" id="previewContainer">
+                            <img id="previewImg" class="preview-img" alt="Preview">
+                        </div>
+                        
+                        <!-- Decrypt Button -->
+                        <button id="decryptBtn" class="btn btn-primary w-100 py-2 fw-bold">DECRYPT URL</button>
+                        
+                        <!-- Scan Attempts -->
+                        <div class="alert alert-info d-none mt-3" id="scanAttempts"></div>
+                        
+                        <!-- Result Container -->
+                        <div class="d-none mt-4" id="resultContainer">
+                            <label class="form-label fw-bold text-success">Decrypted URL:</label>
+                            <div class="result-box mb-3">
+                                <div id="decryptedUrl" style="font-family: monospace; font-size: 14px;"></div>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex">
+                                <button class="btn btn-outline-secondary" id="copyBtn">Copy</button>
+                                <a id="openBtn" href="#" target="_blank" class="btn btn-success">Open Link</a>
+                                <button class="btn btn-info" id="newScanBtn">New Scan</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Error Container -->
+                        <div class="d-none mt-4" id="errorContainer">
+                            <div class="error-box">
+                                <div class="fw-bold mb-2">❌ Error</div>
+                                <div id="errorMessage"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <canvas id="canvas"></canvas>
+    <canvas id="tempCanvas"></canvas>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="ui.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
